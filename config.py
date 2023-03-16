@@ -11,12 +11,12 @@ ADMINS = os.getenv('ADMINS')
 # HEROKU_APP_NAME = os.getenv('HEROKU_APP_NAME')
 
 # webhook settings
-WEBHOOK_HOST = 'https://your.domain'
-WEBHOOK_PATH = '/path/to/api'
+PUBLIC_IP = os.getenv('PUBLIC_IP')
+WEBHOOK_HOST = f"https://{PUBLIC_IP}"
+WEBHOOK_PATH = "/webhook"
 WEBHOOK_URL = f"{WEBHOOK_HOST}{WEBHOOK_PATH}"
 
 # webserver settings
-WEBAPP_HOST = 'localhost'  # or ip
-WEBAPP_PORT = 3001
+WEBAPP_HOST = '0.0.0.0'  # or ip
+WEBAPP_PORT = os.getenv('PORT', default=443)
 # DB_URL = os.getenv('HEROKU_POSTGRESQL_SILVER_URL')
-
