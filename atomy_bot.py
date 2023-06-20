@@ -132,9 +132,9 @@ async def inline_sites(call: CallbackQuery):
     lang = await get_user_data(call.message.chat.id)
     await bot.answer_callback_query(callback_query_id=call.id)
     kb = InlineKeyboardMarkup(row_width=1)
-    kb.add(InlineKeyboardButton('рџ‡єрџ‡ї Atomy Uzbekistan', url=texts.site_urls[0]),
-           InlineKeyboardButton('рџ‡№рџ‡· Atomy Turkey', url=texts.site_urls[1]),
-           InlineKeyboardButton('рџ‡°рџ‡· Atomy Korea', url=texts.site_urls[2]),
+    kb.add(InlineKeyboardButton('🇺🇿 Atomy Uzbekistan', url=texts.site_urls[0]),
+           #InlineKeyboardButton('рџ‡№рџ‡· Atomy Turkey', url=texts.site_urls[1]),
+           InlineKeyboardButton('🇰🇷 Atomy Korea', url=texts.site_urls[2]),
            InlineKeyboardButton(texts.main_btn[lang], callback_data='main_menu'))
     await bot.send_message(call.message.chat.id, texts.sites_desc[lang], reply_markup=kb)
 
@@ -223,3 +223,4 @@ if __name__ == '__main__':
         ssl_context=ssl_context
     )
     # executor.start_polling(dp, skip_updates=True, on_startup=on_startup, on_shutdown=on_shutdown)
+
