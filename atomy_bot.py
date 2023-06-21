@@ -7,7 +7,7 @@ from aiogram.utils.callback_data import CallbackData
 import asyncio
 # from sql import create_pool
 import re
-from config import WEBHOOK_PATH, WEBAPP_HOST, WEBAPP_PORT, API_TOKEN, WEBHOOK_URL, ADMINS
+from config import WEBHOOK_PATH, WEBAPP_HOST, WEBAPP_PORT, API_TOKEN, WEBHOOK_URL, ADMINS, TESTENV
 import texts
 import shelve
 import ssl
@@ -25,7 +25,6 @@ dp = Dispatcher(bot)
 
 statestmp = {}
 
-TESTENV = True
 
 async def store(user_id, obj):
     with shelve.open(FILENAMEDB) as storage:
@@ -256,7 +255,7 @@ async def inline_main_menu(call: CallbackQuery):
 
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.DEBUG, format=' %(asctime)s - %(name)s - %(levelname)s - %(message)s')
     if not TESTENV:
         ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
         ssl_context.load_cert_chain(WEBHOOK_SSL_CERT, WEBHOOK_SSL_PRIV)

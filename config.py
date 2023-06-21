@@ -6,6 +6,7 @@ load_dotenv()
 
 API_TOKEN = os.getenv('BOT_TOKEN')
 ADMINS = os.getenv('ADMINS')
+TESTENV = os.getenv('TESTENV')
 #bot = Bot(token=API_TOKEN, parse_mode='HTML')
 #dp = Dispatcher(bot)
 # HEROKU_APP_NAME = os.getenv('HEROKU_APP_NAME')
