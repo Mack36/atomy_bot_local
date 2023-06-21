@@ -25,6 +25,7 @@ dp = Dispatcher(bot)
 
 statestmp = {}
 
+TESTENV = True
 
 async def store(user_id, obj):
     with shelve.open(FILENAMEDB) as storage:
@@ -50,21 +51,31 @@ async def del_user_data(user_id):
 
 
 async def on_startup(dp):
-    with open(WEBHOOK_SSL_CERT, 'rb') as cert_file:
-        await bot.set_webhook(WEBHOOK_URL, certificate=cert_file)
+    if not TESTENV:
+        with open(WEBHOOK_SSL_CERT, 'rb') as cert_file:
+            await bot.set_webhook(WEBHOOK_URL, certificate=cert_file)
     #await bot.set_webhook(WEBHOOK_URL)
     for admin in admins:
         await bot.send_message(admin, 'Bot has started')
 
 
 async def on_shutdown():
-    await bot.delete_webhook()
+    if not TESTENV:
+        await bot.delete_webhook()
 
 
 @dp.message_handler(commands="start")
 async def cmd_start(message: types.Message):
     kb = await lang_sel_inline()
     await bot.send_photo(message.chat.id, banner, reply_markup=kb)
+
+@dp.message_handler()
+async def proc_msg(message: types.Message):
+    global statestmp
+    if message.from_user.id in statestmp:
+        if statestmp[message.from_user.id] == 30:
+            await proc_contact(message)
+
 
 
 async def main_menu(message: types.Message):
@@ -182,6 +193,42 @@ async def inline_aboutbus(call: CallbackQuery):
     await bot.send_message(call.message.chat.id, texts.about[lang], reply_markup=kb)
 
 
+@dp.callback_query_handler(filters.Regexp(r'become_partner'))
+async def partner(call: CallbackQuery):
+    lang = await get_user_data(call.message.chat.id)
+    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+    keyboard.add(types.KeyboardButton(texts.contact_btn[lang], request_contact=True))
+    global statestmp
+    statestmp[call.from_user.id] = 30
+    await bot.answer_callback_query(callback_query_id=call.id)
+    await call.message.answer(texts.become_partner[lang], reply_markup=keyboard)
+
+    # await bot.send_message(call.message.chat.id, texts.about[lang], reply_markup=kb)
+
+@dp.message_handler(content_types='contact')
+async def proc_contact(message: types.Message):
+    lang = await get_user_data(message.chat.id)
+    if message.content_type == 'contact':
+        phonenum = message.contact.phone_number
+    else:
+        if not re.search('^\+?998[0-9]{9}$', message.text):
+            await message.answer('Некорректный номер, введите номер в формате 998XY1234567')
+            return False
+        else:
+            if re.search('^[^\+]*', message.text):
+                message.text = "+" + message.text
+            phonenum = message.text
+    langname = 'UZB' if lang == 1 else 'RU'
+    partner_txt = f"Пользователь @{message.from_user.username} хочет стать партнером\n[{langname}] {message.from_user.first_name} {message.from_user.last_name} ☎ {phonenum}\n"
+    global statestmp
+    statestmp[message.from_user.id] = 0
+    for admin in admins:
+        await bot.send_message(admin, partner_txt)
+    await message.answer(texts.partner_finish[lang])
+    await main_menu(message)
+
+
+
 @dp.callback_query_handler(filters.Regexp(r'ans[0-9].*'))
 async def inline_faq_ans(call: CallbackQuery):
     lang = await get_user_data(call.message.chat.id)
@@ -210,17 +257,19 @@ async def inline_main_menu(call: CallbackQuery):
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
-    ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
-    ssl_context.load_cert_chain(WEBHOOK_SSL_CERT, WEBHOOK_SSL_PRIV)
-    executor.start_webhook(
-        dispatcher=dp,
-        webhook_path=WEBHOOK_PATH,
-        skip_updates=True,
-        on_startup=on_startup,
-        on_shutdown=on_shutdown,
-        host=WEBAPP_HOST,
-        port=WEBAPP_PORT,
-        ssl_context=ssl_context
-    )
-    # executor.start_polling(dp, skip_updates=True, on_startup=on_startup, on_shutdown=on_shutdown)
+    if not TESTENV:
+        ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
+        ssl_context.load_cert_chain(WEBHOOK_SSL_CERT, WEBHOOK_SSL_PRIV)
+        executor.start_webhook(
+            dispatcher=dp,
+            webhook_path=WEBHOOK_PATH,
+            skip_updates=True,
+            on_startup=on_startup,
+            on_shutdown=on_shutdown,
+            host=WEBAPP_HOST,
+            port=WEBAPP_PORT,
+            ssl_context=ssl_context
+        )
+    else:
+        executor.start_polling(dp, skip_updates=True, on_startup=on_startup, on_shutdown=on_shutdown)
 

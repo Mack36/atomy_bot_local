@@ -264,3 +264,16 @@ site_urls = ['https://www.atomy.uz/uz/Home/Product/MallMain',
 
 telegram_desc = {1: 'Ko\'proq ma\'lumot olish uchun bizning Telegram kanalimizga kirishingiz mumkin...',
                  2: 'Для получения более подробной информации, вы можете перейти на наш канал в Telegram...'}
+
+become_partner = {1:'Atomy hamkoriga aylanish juda ham oson va 5 daqiqa vaqtingizni talab qiladi.\n'
+                    'Iltimos, siz bilan bog\'lanishimiz uchun o\'z telefon raqamingizni kiriting\n'
+                    'Yoki \"Raqamni jo\'natish\" tugmasini bosishingiz ham mumkin.',
+                  2:'Стать партнером Atomy очень просто и займёт не более 5 минут вашего времени. \n'
+                    'Оставьте пожалуйста свой контактный номер. чтобы продолжить\n'
+                    'Можете ввести номер вручную, либо нажать на кноку \"Отправить номер\".'}
+
+contact_btn = {1: '☎ Raqamni jo\'natish',
+               2: '☎ Отправить номер'}
+
+partner_finish = {1: 'Qabul qilindi, siz bilan tez orada bog\'lanamiz.',
+                  2: 'Принято, в скором мы свяжемся с вами.'}
