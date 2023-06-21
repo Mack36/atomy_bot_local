@@ -61,7 +61,7 @@ async def on_startup(dp):
 async def on_shutdown():
     if not TESTENV:
         await bot.delete_webhook()
-
+    pass
 
 @dp.message_handler(commands="start")
 async def cmd_start(message: types.Message):
